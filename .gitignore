@@ -1,0 +1,23 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Compiled/Generated files
+*.pyc
+*.o
+*.class
+/dist
+/build
+target/
+
+# Dependencies
+node_modules/
+.venv/
+
+# Sensitive data/Environment files
+.env
+api_keys.txt
+
+# Logs and temporary files
+*.log
+temp/
