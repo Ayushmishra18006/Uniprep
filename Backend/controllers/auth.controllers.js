@@ -18,6 +18,16 @@ export const registerUserController = async (req, res) => {
       });
     }
 
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 6 characters long and include uppercase, lowercase, number, and special character!",
+      });
+    }
+
     if (age < 18) {
       return res.status(400).json({
         message: "User must be at least 18 years old!",
@@ -155,4 +165,54 @@ export const getMeController = async () => {
   }
 };
 
-export {registerUserController, loginUserController, getMeController};
+import jwt from "jsonwebtoken";
+import TokenBlacklist from "../models/tokenBlacklist.model.js";
+
+/**
+ * @route - GET /api/auth/logout
+ * @description Clear the token from the user's cookie and add it to blacklist model
+ * @access public
+ */
+export const logoutUserController = async (req, res) => {
+  try {
+    const token = req.cookies?.token;
+
+    if (!token) {
+      return res.status(400).json({
+        message: "No token found!",
+      });
+    }
+
+    // Decode token to get expiry
+    const decoded = jwt.decode(token);
+
+    if (!decoded) {
+      return res.status(400).json({
+        message: "Invalid token!",
+      });
+    }
+
+    // Save token in blacklist
+    await TokenBlacklist.create({
+      token,
+      expiresAt: new Date(decoded.exp * 1000), // convert to ms
+    });
+
+    // Clear cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "lax",
+    });
+
+    return res.status(200).json({
+      message: "Logout successful!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong!",
+      error: error.message,
+    });
+  }
+};
+
+export { registerUserController, loginUserController, logoutUserController, getMeController };
