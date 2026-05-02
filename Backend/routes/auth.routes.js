@@ -5,6 +5,7 @@ import {
   logoutUserController,
   getMeController,
 } from "../controllers/auth.controllers.js";
+import authMiddleware from "../middleware/auth.middleware.js";
 
 const authRouter = Router();
 
@@ -25,15 +26,15 @@ authRouter.post("/login", loginUserController);
 /**
  * @route - GET /api/auth/logout
  * @description Clear the token from the user's cookie and add it to blacklist model
- * @access public
+ * @access private
  */
-authRouter.get("/logout", logoutUserController);
+authRouter.post("/logout", authMiddleware, logoutUserController);
 
 /**
  * @route - GET /api/auth/get-me
  * @description Get the current logged-in user information
  * @access private
  */
-authRouter.get("/get-me", getMeController);
+authRouter.get("/get-me", authMiddleware, getMeController);
 
 export default authRouter;

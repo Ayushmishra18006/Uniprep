@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import TokenBlacklist from "../models/tokenBlacklist.model.js";
 
 /**
  * @route - POST /api/auth/register
@@ -165,9 +166,6 @@ export const getMeController = async () => {
   }
 };
 
-import jwt from "jsonwebtoken";
-import TokenBlacklist from "../models/tokenBlacklist.model.js";
-
 /**
  * @route - GET /api/auth/logout
  * @description Clear the token from the user's cookie and add it to blacklist model
@@ -215,4 +213,9 @@ export const logoutUserController = async (req, res) => {
   }
 };
 
-export { registerUserController, loginUserController, logoutUserController, getMeController };
+export {
+  registerUserController,
+  loginUserController,
+  logoutUserController,
+  getMeController,
+};

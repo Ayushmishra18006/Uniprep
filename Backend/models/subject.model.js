@@ -4,12 +4,12 @@ const subjectSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   videos: [String],
   notes: [String],
   pyq: [String],
-  important: [String]
+  important: [String],
 });
 
 export default mongoose.model("Subject", subjectSchema);
