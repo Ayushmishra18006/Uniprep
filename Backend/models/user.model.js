@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     age: {
       type: Number,
       required: [true, "Age is required!"],
-      min: [0, "Age must be positive"],
+      min: [16, "Age must be positive"],
     },
   },
   { timestamps: true }
