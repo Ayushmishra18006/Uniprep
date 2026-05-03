@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import TokenBlacklist from "../models/tokenBlacklist.model.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 /**
  * @route - POST /api/auth/register
@@ -46,6 +47,7 @@ const registerUserController = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("STEP 1: Controller hit");
 
     const newUser = await User.create({
       username,
@@ -53,6 +55,24 @@ const registerUserController = async (req, res) => {
       password: hashedPassword,
       age,
     });
+    console.log("STEP 2: User created");
+
+     sendEmail(
+      newUser.email,
+      "Welcome to Uniprep 🎉",
+      `
+      <h2>Welcome to Uniprep 🚀</h2>
+      <p>It's your one stop solution for all the courses and exams including college, GATE, CLAT, UPSC.</p>
+      
+      <p>No matter which field or year you belong to, Uniprep covers all your issues in one go with the help of a personalized AI assistant.</p>
+    
+      <p>We're excited to have you onboard!</p>
+    
+      <br/>
+      <b>— Team Uniprep</b>
+      `
+    );
+    console.log("STEP 3: Email triggered");
 
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "15m",
