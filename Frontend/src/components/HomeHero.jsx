@@ -49,7 +49,7 @@ function HomeHero() {
 
         {/* LEFT SIDE */}
         <div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-ti">
             Advance your learning journey 🚀
           </h1>
 

@@ -9,7 +9,7 @@ export const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized!" });
     }
 
-    // 🔥 Check blacklist
+    // Check blacklist
     const blacklisted = await TokenBlacklist.findOne({ token });
     if (blacklisted) {
       return res.status(401).json({ message: "Token is invalid!" });
