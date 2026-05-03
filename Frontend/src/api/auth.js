@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api/auth",
-  withCredentials: true, // 🔥 needed for cookies
+  baseURL: "http://localhost:3000/api/auth",
+  withCredentials: true, // needed for cookies
 });
 
 // register
@@ -15,4 +15,4 @@ export const loginUser = (data) => API.post("/login", data);
 export const getMe = () => API.get("/get-me");
 
 // logout
-export const logoutUser = () => API.get("/logout");
+export const logoutUser = () => API.post("/logout");

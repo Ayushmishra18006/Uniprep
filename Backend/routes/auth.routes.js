@@ -5,7 +5,7 @@ import {
   logoutUserController,
   getMeController,
 } from "../controllers/auth.controllers.js";
-import authMiddleware from "../middleware/auth.middleware.js";
+import {authMiddleware} from "../middleware/auth.middleware.js";
 
 const authRouter = Router();
 

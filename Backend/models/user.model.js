@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.index({ username: 1 }); // ascending index
-userSchema.index({ email: 1 }, { unique: true }); // unique index
+// userSchema.index({ username: 1 }); // ascending index
+// userSchema.index({ email: 1 }, { unique: true }); // unique index
 
 export default mongoose.model("User", userSchema);

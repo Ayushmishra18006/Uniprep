@@ -9,7 +9,7 @@ import TokenBlacklist from "../models/tokenBlacklist.model.js";
  * @description Register the user
  * @access public
  */
-export const registerUserController = async (req, res) => {
+const registerUserController = async (req, res) => {
   try {
     const { username, email, password, age } = req.body;
 
@@ -88,7 +88,7 @@ export const registerUserController = async (req, res) => {
  * @description Login existing user
  * @access public
  */
-export const loginUserController = async (req, res) => {
+const loginUserController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -144,18 +144,25 @@ export const loginUserController = async (req, res) => {
  * @description Get the current logged-in user information
  * @access private
  */
-export const getMeController = async () => {
+const getMeController = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    res.status(200).json({
-      message: "User details fetched succesfully!",
+    const user = await User.findById(req.user.userId); // from JWT
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found!",
+      });
+    }
+
+    return res.status(200).json({
+      message: "User details fetched successfully!",
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
-        createdAt: newUser.createdAt,
-        updatedAt: newUser.updatedAt,
-        createdAtFormatted: new Date(newUser.createdAt).toLocaleString(),
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        createdAtFormatted: new Date(user.createdAt).toLocaleString(),
       },
     });
   } catch (error) {
@@ -171,7 +178,7 @@ export const getMeController = async () => {
  * @description Clear the token from the user's cookie and add it to blacklist model
  * @access public
  */
-export const logoutUserController = async (req, res) => {
+const logoutUserController = async (req, res) => {
   try {
     const token = req.cookies?.token;
 
