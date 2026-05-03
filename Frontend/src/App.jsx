@@ -1,22 +1,26 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Pages
+// Existing Pages
 import Homepage from "./pages/Homepage";
 import Subjects from "./pages/Subjects";
-import SubjectDetail from "./pages/SubjectDetail"; // (we'll create next)
+import SubjectDetail from "./pages/SubjectDetail";
+
+// New Auth Pages
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Home */}
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Existing Routes */}
         <Route path="/" element={<Homepage />} />
-
-        {/* Subjects Page */}
         <Route path="/subjects" element={<Subjects />} />
-
-        {/* Subject Detail Page */}
         <Route path="/subject/:subject" element={<SubjectDetail />} />
 
       </Routes>
