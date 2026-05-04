@@ -1,8 +1,21 @@
 import express from "express";
-import { getSubject } from "../controllers/subject.controllers.js";
+import { getSubject, createSubject } from "../controllers/subject.controllers.js";
 
-const router = express.Router();
+const subjectRouter = express.Router();
 
-router.get("/:name", getSubject);
+/**
+ * @route - GET /api/subjects/dbms
+ * @description Get a subject
+ * @access public
+ */
+subjectRouter.get("/:name", getSubject);
 
-export default router;
+
+/**
+ * @route - POST /api/subjects/createSubject
+ * @description Get a subject
+ * @access public
+ */
+subjectRouter.post("/createSubject", createSubject)
+
+export default subjectRouter;

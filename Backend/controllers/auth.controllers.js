@@ -47,7 +47,6 @@ const registerUserController = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("STEP 1: Controller hit");
 
     const newUser = await User.create({
       username,
@@ -55,7 +54,6 @@ const registerUserController = async (req, res) => {
       password: hashedPassword,
       age,
     });
-    console.log("STEP 2: User created");
 
      sendEmail(
       newUser.email,
@@ -72,7 +70,6 @@ const registerUserController = async (req, res) => {
       <b>— Team Uniprep</b>
       `
     );
-    console.log("STEP 3: Email triggered");
 
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "15m",
