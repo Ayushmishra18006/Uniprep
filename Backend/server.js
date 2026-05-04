@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import subjectRoutes from "./routes/subject.routes.js";
+
+
 
 
 const app = express();
@@ -22,6 +25,7 @@ app.use(
 /**
  * Connected the backend to port 3000
  */
+app.use("/api/subjects", subjectRoutes);
 const PORT = process.env.PORT || 3000;
 
 // Routes
