@@ -5,13 +5,18 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
+  const handleNavigate = (path) => {
+    navigate(path);
+    setOpen(false); // close mobile menu after click
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 
         {/* Logo */}
         <h1
-          onClick={() => navigate("/")}
+          onClick={() => handleNavigate("/")}
           className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text cursor-pointer"
         >
           UniPrep
@@ -19,23 +24,38 @@ function Navbar() {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-8 text-gray-700 font-medium">
-          <li onClick={() => navigate("/")} className="hover:text-indigo-600 cursor-pointer">Home</li>
-          <li className="hover:text-indigo-600 cursor-pointer">Community</li>
-          <li className="hover:text-indigo-600 cursor-pointer">Mentor</li>
-          <li className="hover:text-indigo-600 cursor-pointer">About</li>
+          <li onClick={() => handleNavigate("/")} className="hover:text-indigo-600 cursor-pointer">
+            Home
+          </li>
+
+          <li className="hover:text-indigo-600 cursor-pointer">
+            Community
+          </li>
+
+          <li className="hover:text-indigo-600 cursor-pointer">
+            Mentor
+          </li>
+
+          {/* ✅ FIXED DASHBOARD NAVIGATION */}
+          <li
+            onClick={() => handleNavigate("/dashboard")}
+            className="hover:text-indigo-600 cursor-pointer"
+          >
+            Dashboard
+          </li>
         </ul>
 
         {/* Buttons */}
         <div className="hidden md:flex gap-3">
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => handleNavigate("/login")}
             className="px-4 py-2 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
           >
             Sign In
           </button>
 
           <button
-            onClick={() => navigate("/register")}
+            onClick={() => handleNavigate("/register")}
             className="px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200"
           >
             Sign Up
@@ -54,20 +74,31 @@ function Navbar() {
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden px-6 pb-4 space-y-3 bg-white shadow">
-          <p onClick={() => navigate("/")} className="cursor-pointer">Home</p>
+          <p onClick={() => handleNavigate("/")} className="cursor-pointer">
+            Home
+          </p>
+
           <p className="cursor-pointer">Courses</p>
+
           <p className="cursor-pointer">Mentor</p>
-          <p className="cursor-pointer">Docs</p>
+
+          {/* ✅ MOBILE DASHBOARD FIX */}
+          <p
+            onClick={() => handleNavigate("/dashboard")}
+            className="cursor-pointer"
+          >
+            Dashboard
+          </p>
 
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => handleNavigate("/login")}
             className="w-full py-2 bg-indigo-600 text-white rounded-lg"
           >
             Sign In
           </button>
 
           <button
-            onClick={() => navigate("/register")}
+            onClick={() => handleNavigate("/register")}
             className="w-full py-2 bg-gray-200 rounded-lg"
           >
             Sign Up
