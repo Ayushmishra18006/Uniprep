@@ -2,7 +2,9 @@ import Subject from "../models/subject.model.js";
 
 export const getSubject = async (req, res) => {
   try {
-    const subject = req.params.name.toLowerCase();
+    console.log("API HIT");
+    const subject = req.params.name.trim().toLowerCase();
+    console.log("Searching for:",subject);
 
     const data = await Subject.findOne({ name: subject });
 

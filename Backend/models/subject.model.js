@@ -5,11 +5,26 @@ const subjectSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    trim: true
+
   },
-  videos: [String],
-  notes: [String],
-  pyq: [String],
-  important: [String],
+videos: {
+  type: [String],
+  default: []
+},
+notes: {
+  type: [String],
+  default: []
+},
+pyq: {
+  type: [String],
+  default: []
+},
+important: {
+  type: [String],
+  default: []
+}
 });
 
 export default mongoose.model("Subject", subjectSchema);
