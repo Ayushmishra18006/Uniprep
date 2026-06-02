@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -9,7 +11,16 @@ import subjectRouter from "./routes/subject.routes.js";
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 connectDB();
+
+// Socket io server
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+});
 
 // CORS FIRST
 app.use(
@@ -32,6 +43,23 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("joinChannel", (channel) => {
+    socket.join(channel);
+  });
+
+  socket.on("sendMessage", (data) => {
+    if (!data.text?.trim()) return;
+    io.to(data.channel).emit("receiveMessage", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
 // Routes
 app.get("/", (req, res) => {
   res.json({ message: "You are currently in the home page of the app!" });
@@ -46,7 +74,7 @@ app.use("/api/subjects", subjectRouter);
 // Server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () =>
+server.listen(PORT, () =>
   console.log(`Server is currently running on PORT ${PORT} ✅`)
 );
 

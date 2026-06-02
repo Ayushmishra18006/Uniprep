@@ -12,7 +12,12 @@ const CommunityPage = () => {
   // Load theme
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    if (saved === "light") setDark(false);
+  
+    if (saved === "light") {
+      setDark(false);
+    } else {
+      setDark(true);
+    }
   }, []);
 
   // Apply theme
