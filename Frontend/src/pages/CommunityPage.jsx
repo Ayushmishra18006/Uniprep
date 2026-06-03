@@ -50,6 +50,7 @@ const CommunityPage = () => {
         {
           user: msg.sender,
           text: msg.text,
+          createdAt: msg.createdAt,
         },
       ]);
     });
@@ -74,6 +75,7 @@ const CommunityPage = () => {
           res.data.map((msg) => ({
             user: msg.sender || "Unknown",
             text: msg.text,
+            createdAt: msg.createdAt,
           }))
         );
       } catch (error) {
@@ -113,12 +115,23 @@ const CommunityPage = () => {
     if (!input.trim() || !currentUser) return;
 
     socket.emit("sendMessage", {
-      sender: currentUser.email,
+      sender: currentUser.user.username,
       text: input,
       channel: activeChannel,
     });
+    // console.log("Current user = ", currentUser);
 
     setInput("");
+  };
+
+  // Time display fn
+  const formatTime = (date) => {
+    return new Date(date).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      // second: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -159,13 +172,24 @@ const CommunityPage = () => {
         </div>
 
         {/* MESSAGES */}
-        <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+        <div className="flex-1 p-4 space-y-4 overflow-y-auto font-mono font-bold">
           {messages.map((msg, i) => (
             <div
               key={i}
               className="bg-white text-gray-800 dark:bg-[#1f1f3a] dark:text-gray-200 p-3 rounded-xl shadow-sm"
             >
-              <span className="font-semibold text-indigo-500">{msg.user}</span>
+              <div className="flex justify-between items-start">
+                <span className="font-semibold text-indigo-500">
+                  {msg.user}
+                </span>
+
+                {msg.createdAt && (
+                  <span className="text-xs text-gray-400">
+                    {formatTime(msg.createdAt)}
+                  </span>
+                )}
+              </div>
+
               <p className="text-sm mt-1">{msg.text}</p>
             </div>
           ))}
