@@ -1,19 +1,95 @@
+/* eslint-disable no-unused-vars */
+import socket from "../socket.js";
 import { useEffect, useState } from "react";
+import { getMe } from "../api/auth";
+import { getMessages } from "../api/message.js";
 
 const CommunityPage = () => {
   const [dark, setDark] = useState(true);
-  const [messages, setMessages] = useState([
-    { user: "Amit", text: "Hey everyone 👋" },
-    { user: "Rahul", text: "Welcome to community!" },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [activeChannel, setActiveChannel] = useState("general");
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await getMe();
+
+        console.log("Current User:", res.data);
+
+        setCurrentUser(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Socket-io
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected:", socket.id);
+
+      socket.emit("joinChannel", "general");
+    });
+
+    return () => {
+      socket.off("connect");
+    };
+  }, []);
+
+  // Test
+  useEffect(() => {
+    socket.on("receiveMessage", (msg) => {
+      console.log("Received:", msg);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          user: msg.sender,
+          text: msg.text,
+        },
+      ]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.emit("joinChannel", activeChannel);
+
+    console.log("Joined:", activeChannel);
+  }, [activeChannel]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await getMessages(activeChannel);
+
+        setMessages(
+          res.data.map((msg) => ({
+            user: msg.sender || "Unknown",
+            text: msg.text,
+          }))
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMessages();
+  }, [activeChannel]);
 
   // Load theme
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-  
+
     if (saved === "light") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDark(false);
     } else {
       setDark(true);
@@ -34,21 +110,21 @@ const CommunityPage = () => {
   }, [dark]);
 
   const sendMessage = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !currentUser) return;
 
-    setMessages((prev) => [
-      ...prev,
-      { user: "You", text: input },
-    ]);
+    socket.emit("sendMessage", {
+      sender: currentUser.email,
+      text: input,
+      channel: activeChannel,
+    });
+
     setInput("");
   };
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-[#0f0f1a] text-gray-900 dark:text-white transition-colors duration-300">
-
       {/* SIDEBAR */}
       <div className="w-64 bg-white dark:bg-[#151528] p-4 space-y-4 border-r border-gray-200 dark:border-gray-700">
-
         <h2 className="text-lg font-semibold">Community</h2>
 
         <div className="space-y-2">
@@ -77,7 +153,6 @@ const CommunityPage = () => {
 
       {/* CHAT AREA */}
       <div className="flex-1 flex flex-col">
-
         {/* HEADER */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-700 font-semibold bg-white dark:bg-[#0f0f1a]">
           # {activeChannel}
@@ -90,9 +165,7 @@ const CommunityPage = () => {
               key={i}
               className="bg-white text-gray-800 dark:bg-[#1f1f3a] dark:text-gray-200 p-3 rounded-xl shadow-sm"
             >
-              <span className="font-semibold text-indigo-500">
-                {msg.user}
-              </span>
+              <span className="font-semibold text-indigo-500">{msg.user}</span>
               <p className="text-sm mt-1">{msg.text}</p>
             </div>
           ))}
@@ -114,7 +187,6 @@ const CommunityPage = () => {
             Send
           </button>
         </div>
-
       </div>
     </div>
   );

@@ -7,6 +7,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import subjectRouter from "./routes/subject.routes.js";
+import Message from "./models/message.model.js";
+import messageRouter from "./routes/message.routes.js";
 
 dotenv.config();
 
@@ -48,11 +50,23 @@ io.on("connection", (socket) => {
 
   socket.on("joinChannel", (channel) => {
     socket.join(channel);
+    // console.log(`${socket.id} joined ${channel}`);
   });
 
-  socket.on("sendMessage", (data) => {
-    if (!data.text?.trim()) return;
-    io.to(data.channel).emit("receiveMessage", data);
+  socket.on("sendMessage", async (data) => {
+    try {
+      console.log("Message received:", data);
+
+      const savedMessage = await Message.create({
+        sender: data.sender,
+        text: data.text,
+        channel: data.channel,
+      });
+
+      io.to(data.channel).emit("receiveMessage", savedMessage);
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   socket.on("disconnect", () => {
@@ -71,8 +85,11 @@ app.use("/api/auth", authRouter);
 // Subject Router
 app.use("/api/subjects", subjectRouter);
 
+// Message Router
+app.use("/api/messages", messageRouter)
+
 // Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () =>
   console.log(`Server is currently running on PORT ${PORT} ✅`)
