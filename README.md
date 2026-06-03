@@ -100,12 +100,4 @@ JWT_SECRET=your_secret_key
 YOUTUBE_API_KEY=your_api_key
 ```
 
-## 🌟 Future Improvements
-
-- Mobile App
-- Mock Tests
-- AI-based Analytics
-- Recommendation System
-- Offline Downloads
-
 ---
