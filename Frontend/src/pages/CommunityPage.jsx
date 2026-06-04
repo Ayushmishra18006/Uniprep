@@ -3,6 +3,8 @@ import socket from "../socket.js";
 import { useEffect, useState } from "react";
 import { getMe } from "../api/auth";
 import { getMessages } from "../api/message.js";
+import { useRef } from "react";
+
 
 const CommunityPage = () => {
   const [dark, setDark] = useState(true);
@@ -10,6 +12,7 @@ const CommunityPage = () => {
   const [input, setInput] = useState("");
   const [activeChannel, setActiveChannel] = useState("general");
   const [currentUser, setCurrentUser] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,6 +29,13 @@ const CommunityPage = () => {
 
     fetchUser();
   }, []);
+
+  // Auto-scroll to end for the newest message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   // Socket-io
   useEffect(() => {
@@ -173,26 +183,43 @@ const CommunityPage = () => {
 
         {/* MESSAGES */}
         <div className="flex-1 p-4 space-y-4 overflow-y-auto font-mono font-bold">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className="bg-white text-gray-800 dark:bg-[#1f1f3a] dark:text-gray-200 p-3 rounded-xl shadow-sm"
-            >
-              <div className="flex justify-between items-start">
-                <span className="font-semibold text-indigo-500">
-                  {msg.user}
-                </span>
+          {messages.map((msg, i) => {
+            const isMe = msg.user === currentUser?.user?.username;
 
-                {msg.createdAt && (
-                  <span className="text-xs text-gray-400">
-                    {formatTime(msg.createdAt)}
-                  </span>
-                )}
+            return (
+              <div
+                key={i}
+                className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-fit p-3 rounded-xl shadow-sm ${
+                    isMe
+                      ? "bg-indigo-800 text-white"
+                      : "bg-[#1f1f3a] text-gray-200"
+                  }`}
+                >
+                  <div className="flex justify-between items-center gap-4">
+                    <span
+                      className={`font-semibold ${
+                        isMe ? "text-white" : "text-indigo-400"
+                      }`}
+                    >
+                      {isMe ? "You" : msg.user}
+                    </span>
+
+                    {msg.createdAt && (
+                      <span className="text-xs text-gray-300">
+                        {formatTime(msg.createdAt)}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-sm mt-1">{msg.text}</p>
+                  <div ref={messagesEndRef}></div>
+                </div>
               </div>
-
-              <p className="text-sm mt-1">{msg.text}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* INPUT */}
