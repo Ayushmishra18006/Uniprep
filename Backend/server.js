@@ -9,6 +9,9 @@ import authRouter from "./routes/auth.routes.js";
 import subjectRouter from "./routes/subject.routes.js";
 import Message from "./models/message.model.js";
 import messageRouter from "./routes/message.routes.js";
+import courseSubjectRouter from "./routes/courseSubject.routes.js";
+import resourceRouter from "./routes/resource.routes.js";
+
 
 dotenv.config();
 
@@ -85,8 +88,13 @@ app.use("/api/auth", authRouter);
 // Subject Router
 app.use("/api/subjects", subjectRouter);
 
+
+
 // Message Router
 app.use("/api/messages", messageRouter)
+
+app.use("/api/course-subjects", courseSubjectRouter);
+app.use("/api/resources", resourceRouter);
 
 // Server
 const PORT = process.env.PORT || 3000;

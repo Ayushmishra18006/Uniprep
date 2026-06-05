@@ -1,8 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Subjects() {
+
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [subjects, setSubjects] = useState([]);
 
   const params = new URLSearchParams(location.search);
 
@@ -10,45 +15,60 @@ function Subjects() {
   const year = params.get("year");
   const branch = params.get("branch");
 
-  // Dummy Data (later from backend)
-  const subjectsData = {
-    btech: {
-      2: {
-        CSE: ["DBMS", "OS", "CN", "DSA"]
-      }
-    },
-    bca: {
-      1: {
-        General: ["C Programming", "Math", "DBMS"]
-      }
+  useEffect(() => {
+    fetchSubjects();
+  }, [course, year, branch]);
+
+  const fetchSubjects = async () => {
+    try {
+
+      const res = await axios.get(
+        `http://localhost:3000/api/course-subjects?course=${course}&year=${year}&branch=${branch}`
+      );
+
+      console.log(res.data);
+
+      setSubjects(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
     }
   };
-
-  const subjects =
-    subjectsData?.[course]?.[year]?.[branch] || [];
 
   return (
     <div className="p-6">
 
-      {/* Title */}
       <h1 className="text-2xl font-bold mb-6">
         {course?.toUpperCase()} - Year {year} ({branch})
       </h1>
 
-      {/* Subjects Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {subjects.map((sub, index) => (
-          <div
-            key={index}
-            onClick={() => navigate(`/subject/${sub.toLowerCase()}`)}
-            className="bg-indigo-100 p-6 rounded-xl cursor-pointer hover:scale-105 transition"
-          >
-            <h2 className="font-semibold text-indigo-700 text-center">
-              {sub}
-            </h2>
-          </div>
-        ))}
-      </div>
+      {subjects.length === 0 ? (
+        <p>No subjects found.</p>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+          {subjects.map((sub) => (
+
+            <div
+              key={sub._id}
+              onClick={() =>
+                navigate(`/subject/${sub.subject_slug}`)
+              }
+              className="bg-indigo-100 p-6 rounded-xl cursor-pointer hover:scale-105 transition"
+            >
+
+              <h2 className="font-semibold text-indigo-700 text-center">
+                {sub.subject_slug}
+              </h2>
+
+            </div>
+
+          ))}
+
+        </div>
+      )}
 
     </div>
   );

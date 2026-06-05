@@ -1,30 +1,21 @@
 import mongoose from "mongoose";
 
-const subjectSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
+const subjectSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
 
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
-videos: {
-  type: [String],
-  default: []
-},
-notes: {
-  type: [String],
-  default: []
-},
-pyq: {
-  type: [String],
-  default: []
-},
-important: {
-  type: [String],
-  default: []
-}
-});
+  { timestamps: true }
+);
 
-export default mongoose.model("Subject", subjectSchema);
+const Subject = mongoose.model("Subject", subjectSchema);
+
+export default Subject;

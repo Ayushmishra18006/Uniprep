@@ -1,34 +1,42 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function SubjectDetail() {
   const { subject } = useParams();
+
+  const [resources, setResources] = useState([]);
   const [activeTab, setActiveTab] = useState("videos");
 
-  // Dummy Data (later from backend)
-  const data = {
-    dbms: {
-        videos: [
-      "https://www.youtube.com/embed/khKoJUpcXUE",
-      "https://www.youtube.com/embed/YRnjGeQbsHQ"
-    ],
-      notes: ["DBMS Notes PDF", "Normalization Notes"],
-      pyq: ["2023 Question Paper", "2022 Question Paper"],
-      important: ["Important Topics 1", "Important Topics 2"]
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  const fetchResources = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/api/resources/${subject}`
+      );
+
+      console.log(res.data);
+
+      setResources(res.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const subjectData = data[subject] || {};
+  const filteredResources = resources.filter(
+    (item) => item.type === activeTab
+  );
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-8">
 
-      {/* Title */}
-      <h1 className="text-3xl font-bold mb-6 capitalize">
-        {subject}
+      <h1 className="text-3xl font-bold mb-6">
+        Subject Resources
       </h1>
 
-      {/* Tabs */}
       <div className="flex gap-4 mb-6">
         {["videos", "notes", "pyq", "important"].map((tab) => (
           <button
@@ -45,68 +53,38 @@ function SubjectDetail() {
         ))}
       </div>
 
-      {/* Content */}
-      <div>
+      {activeTab === "videos" && (
+        <div className="grid md:grid-cols-2 gap-6">
 
-        {/* VIDEOS */}
-        {activeTab === "videos" && (
-          <div className="grid md:grid-cols-2 gap-6">
-            {subjectData.videos?.map((video, index) => (
-          <iframe
-  key={index}
-  src={video}
-  title="YouTube video"
-  className="w-full h-64 rounded-xl shadow-md"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowFullScreen
-></iframe>
-            ))}
-          </div>
-        )}
+          {filteredResources.map((video) => (
+            <iframe
+              key={video._id}
+              src="https://www.youtube.com/embed/khKoJUpcXUE"
+              title={video.title}
+              width="100%"
+              height="315"
+              allowFullScreen
+            ></iframe>
+          ))}
 
-        {/* NOTES */}
-        {activeTab === "notes" && (
-          <ul className="space-y-3">
-            {subjectData.notes?.map((note, index) => (
-              <li
-                key={index}
-                className="bg-gray-100 p-4 rounded-lg"
-              >
-                📄 {note}
-              </li>
-            ))}
-          </ul>
-        )}
+        </div>
+      )}
 
-        {/* PYQ */}
-        {activeTab === "pyq" && (
-          <ul className="space-y-3">
-            {subjectData.pyq?.map((q, index) => (
-              <li
-                key={index}
-                className="bg-gray-100 p-4 rounded-lg"
-              >
-                📚 {q}
-              </li>
-            ))}
-          </ul>
-        )}
+      {activeTab !== "videos" && (
+        <ul className="space-y-3">
 
-        {/* IMPORTANT */}
-        {activeTab === "important" && (
-          <ul className="space-y-3">
-            {subjectData.important?.map((item, index) => (
-              <li
-                key={index}
-                className="bg-gray-100 p-4 rounded-lg"
-              >
-                ⭐ {item}
-              </li>
-            ))}
-          </ul>
-        )}
+          {filteredResources.map((item) => (
+            <li
+              key={item._id}
+              className="bg-gray-100 p-4 rounded-lg"
+            >
+              {item.title}
+            </li>
+          ))}
 
-      </div>
+        </ul>
+      )}
+
     </div>
   );
 }
