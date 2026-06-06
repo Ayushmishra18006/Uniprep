@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Register() {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ function Register() {
       setLoading(false);
     }
   };
+  // console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
   return (
     <div
@@ -196,7 +198,7 @@ function Register() {
         <div className="my-4 text-center text-gray-400 text-sm">or</div>
 
         {/* Social (UI only) */}
-        <button
+        {/* <button
           className={`w-full py-2 border rounded-lg transition ${
             isDark
               ? "border-gray-600 hover:bg-gray-700 text-white"
@@ -204,7 +206,16 @@ function Register() {
           }`}
         >
           Continue with Google
-        </button>
+        </button> */}
+
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log("Google Success:", credentialResponse);
+          }}
+          onError={() => {
+            console.log("Google Login Failed");
+          }}
+        />
 
         {/* Login link */}
         <p
